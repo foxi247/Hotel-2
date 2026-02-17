@@ -431,6 +431,118 @@ app.get('/api/admin/stats', adminAuth, (req, res) => {
   res.json(stats);
 });
 
+// ==================== REVIEWS API ====================
+
+// Get all reviews
+app.get('/api/admin/reviews', adminAuth, (req, res) => {
+  const db = readDB();
+  const reviews = db.reviews || [];
+  res.json(reviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+});
+
+// Add review (public)
+app.post('/api/reviews', (req, res) => {
+  const db = readDB();
+  
+  const review = {
+    id: `review_${Date.now().toString(36)}`,
+    name: req.body.name,
+    rating: parseInt(req.body.rating) || 5,
+    text: req.body.text || '',
+    type: req.body.type || 'general', // room, tour, general
+    item_id: req.body.item_id || null, // linked tour/room ID
+    created_at: new Date().toISOString(),
+    status: 'pending' // pending, approved, rejected
+  };
+  
+  if (!db.reviews) db.reviews = [];
+  db.reviews.push(review);
+  
+  if (writeDB(db)) {
+    res.json({ success: true, message: 'Отзыв отправлен на модерацию', review });
+  } else {
+    res.status(500).json({ error: 'Ошибка сохранения' });
+  }
+});
+
+// Approve review
+app.put('/api/admin/reviews/:id/approve', adminAuth, (req, res) => {
+  const db = readDB();
+  if (!db.reviews) return res.status(404).json({ error: 'Отзывы не найдены' });
+  
+  const review = db.reviews.find(r => r.id === req.params.id);
+  if (review) {
+    review.status = 'approved';
+    if (writeDB(db)) {
+      res.json({ success: true, message: 'Отзыв одобрен' });
+    } else {
+      res.status(500).json({ error: 'Ошибка сохранения' });
+    }
+  } else {
+    res.status(404).json({ error: 'Отзыв не найден' });
+  }
+});
+
+// Reject review
+app.put('/api/admin/reviews/:id/reject', adminAuth, (req, res) => {
+  const db = readDB();
+  if (!db.reviews) return res.status(404).json({ error: 'Отзывы не найдены' });
+  
+  const review = db.reviews.find(r => r.id === req.params.id);
+  if (review) {
+    review.status = 'rejected';
+    if (writeDB(db)) {
+      res.json({ success: true, message: 'Отзыв отклонён' });
+    } else {
+      res.status(500).json({ error: 'Ошибка сохранения' });
+    }
+  } else {
+    res.status(404).json({ error: 'Отзыв не найден' });
+  }
+});
+
+// Delete review
+app.delete('/api/admin/reviews/:id', adminAuth, (req, res) => {
+  const db = readDB();
+  if (!db.reviews) return res.status(404).json({ error: 'Отзывы не найдены' });
+  
+  const initialLength = db.reviews.length;
+  db.reviews = db.reviews.filter(r => r.id !== req.params.id);
+  
+  if (db.reviews.length < initialLength) {
+    if (writeDB(db)) {
+      res.json({ success: true, message: 'Отзыв удалён' });
+    } else {
+      res.status(500).json({ error: 'Ошибка сохранения' });
+    }
+  } else {
+    res.status(404).json({ error: 'Отзыв не найден' });
+  }
+});
+
+// ==================== SEO API ====================
+
+// Get SEO settings
+app.get('/api/admin/seo', adminAuth, (req, res) => {
+  const db = readDB();
+  res.json(db.seo || {});
+});
+
+// Update SEO settings
+app.post('/api/admin/seo', adminAuth, (req, res) => {
+  const db = readDB();
+  db.seo = {
+    ...db.seo,
+    ...req.body
+  };
+  
+  if (writeDB(db)) {
+    res.json({ success: true, message: 'SEO настройки сохранены' });
+  } else {
+    res.status(500).json({ error: 'Ошибка сохранения' });
+  }
+});
+
 // ==================== FRONTEND ROUTES ====================
 
 // Admin panel

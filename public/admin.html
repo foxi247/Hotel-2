@@ -41,6 +41,14 @@
           <span class="nav-icon">📂</span>
           <span>Категории</span>
         </a>
+        <a href="#" class="nav-item" data-section="reviews">
+          <span class="nav-icon">⭐</span>
+          <span>Отзывы</span>
+        </a>
+        <a href="#" class="nav-item" data-section="seo">
+          <span class="nav-icon">🔍</span>
+          <span>SEO</span>
+        </a>
         <a href="#" class="nav-item" data-section="bookings">
           <span class="nav-icon">📝</span>
           <span>Заявки</span>
@@ -65,7 +73,7 @@
         <button class="menu-toggle" id="menuToggle">☰</button>
         <h1 class="page-title">Дашборд</h1>
         <div class="admin-actions">
-          <button class="btn btn-secondary" onclick="exportData()" title="Выгрузить данные">📥 Выгрузить</button>
+          <button class="btn btn-secondary" onclick="exportData()" title="Выгрузить данные">📥</button>
           <span class="current-time" id="currentTime"></span>
           <div class="admin-user">
             <span class="user-avatar">👤</span>
@@ -114,11 +122,11 @@
               <button class="action-btn" data-action="addTour">
                 <span>➕</span><span>Добавить тур</span>
               </button>
-              <button class="action-btn" data-action="updateCounter">
-                <span>👥</span><span>Обновить счётчик</span>
+              <button class="action-btn" data-action="addRoom">
+                <span>🛏️</span><span>Добавить номер</span>
               </button>
               <button class="action-btn" data-action="viewBookings">
-                <span>📝</span><span>Просмотр заявок</span>
+                <span>📝</span><span>Заявки</span>
               </button>
               <button class="action-btn" data-action="openSite">
                 <span>🌐</span><span>Открыть сайт</span>
@@ -239,6 +247,84 @@
         </div>
       </section>
 
+      <!-- Reviews Section -->
+      <section class="admin-section" id="reviews">
+        <div class="section-header">
+          <h2>Отзывы</h2>
+          <button class="btn btn-secondary" onclick="renderReviews()">🔄 Обновить</button>
+        </div>
+        
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Оценка</th>
+                <th>Текст</th>
+                <th>Тип</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="reviewsTableBody">
+              <tr><td colspan="8" style="text-align: center; color: var(--gray);">Загрузка...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SEO Section -->
+      <section class="admin-section" id="seo">
+        <div class="section-header">
+          <h2>SEO настройки</h2>
+          <button class="btn btn-primary" id="saveSeoBtn">💾 Сохранить</button>
+        </div>
+        
+        <form class="admin-form" id="seoForm">
+          <div class="form-section-title">Главная страница</div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Meta Title</label>
+              <input type="text" name="home_title" placeholder="Халачи Гостиница - комфорт в Дербенте" />
+            </div>
+            <div class="form-group full-width">
+              <label>Meta Description</label>
+              <textarea name="home_description" rows="3" placeholder="Современная гостиница в сердце Дербента..."></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Keywords</label>
+              <input type="text" name="home_keywords" placeholder="гостиница, Дербент, номер, тур" />
+            </div>
+          </div>
+          
+          <div class="form-section-title">Туры</div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Meta Title (тур)</label>
+              <input type="text" name="tours_title" placeholder="%name% - Туры в Дербенте" />
+            </div>
+            <div class="form-group full-width">
+              <label>Meta Description (тур)</label>
+              <textarea name="tours_description" rows="3" placeholder="Заказать тур в Дербенте..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-section-title">Номера</div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Meta Title (номер)</label>
+              <input type="text" name="rooms_title" placeholder="%name% - Бронирование номера" />
+            </div>
+            <div class="form-group full-width">
+              <label>Meta Description (номер)</label>
+              <textarea name="rooms_description" rows="3" placeholder="Забронировать номер в гостинице Халачи..."></textarea>
+            </div>
+          </div>
+        </form>
+      </section>
+
       <!-- Bookings Section -->
       <section class="admin-section" id="bookings">
         <div class="section-header">
@@ -288,52 +374,152 @@
     </main>
   </div>
 
-  <!-- Modals -->
+  <!-- Tour Modal -->
   <div class="modal" id="tourModal">
-    <div class="modal-content">
+    <div class="modal-content modal-large">
       <div class="modal-header">
         <h3>Добавить тур</h3>
         <button class="modal-close">&times;</button>
       </div>
       <form class="modal-form" id="tourForm">
+        <div class="form-tabs">
+          <button type="button" class="tab-btn active" data-tab="main">Основное</button>
+          <button type="button" class="tab-btn" data-tab="details">Детали</button>
+          <button type="button" class="tab-btn" data-tab="media">Фото</button>
+        </div>
+        
+        <div class="tab-content active" id="tab-main">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Название *</label>
+              <input type="text" name="title" required />
+            </div>
+            <div class="form-group">
+              <label>Категория *</label>
+              <select name="category" required></select>
+            </div>
+            <div class="form-group">
+              <label>Цена *</label>
+              <input type="number" name="price" required />
+            </div>
+            <div class="form-group">
+              <label>Продолжительность</label>
+              <input type="text" name="duration" placeholder="3 часа" />
+            </div>
+            <div class="form-group">
+              <label>Рейтинг (0-5)</label>
+              <input type="number" name="rating" step="0.1" min="0" max="5" value="4.5" />
+            </div>
+            <div class="form-group">
+              <label>Отзывы</label>
+              <input type="number" name="reviews_count" value="0" />
+            </div>
+            <div class="form-group full-width">
+              <label>Краткое описание</label>
+              <textarea name="short_desc" rows="2"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label>Полное описание</label>
+              <textarea name="description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" name="featured" /> Рекомендуемый</label>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" name="available" checked /> Доступен</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="tab-details">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Расписание (дни недели)</label>
+              <div class="checkbox-group">
+                <label><input type="checkbox" name="schedule" value="пн" /> Пн</label>
+                <label><input type="checkbox" name="schedule" value="вт" /> Вт</label>
+                <label><input type="checkbox" name="schedule" value="ср" /> Ср</label>
+                <label><input type="checkbox" name="schedule" value="чт" /> Чт</label>
+                <label><input type="checkbox" name="schedule" value="пт" /> Пт</label>
+                <label><input type="checkbox" name="schedule" value="сб" /> Сб</label>
+                <label><input type="checkbox" name="schedule" value="вс" /> Вс</label>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label>Что включено (через запятую)</label>
+              <textarea name="highlights" rows="4" placeholder="Трансфер, Обед, Гид, Страховка"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Место сбора</label>
+              <input type="text" name="meeting_point" placeholder="Центральный вход гостиницы" />
+            </div>
+            <div class="form-group">
+              <label>Группа до (чел)</label>
+              <input type="number" name="group_size" placeholder="10" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-content" id="tab-media">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Фотографии</label>
+              <div class="image-upload-area" id="tourImagesArea">
+                <input type="file" id="tourImages" accept="image/*" multiple />
+                <div class="upload-placeholder">
+                  <span>📷</span>
+                  <p>Нажмите или перетащите фото сюда</p>
+                </div>
+              </div>
+              <div class="image-preview-grid" id="tourImagePreview"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary modal-cancel">Отмена</button>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Room Modal -->
+  <div class="modal" id="roomModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="roomModalTitle">Добавить номер</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form class="modal-form" id="roomForm">
+        <input type="hidden" name="id" />
         <div class="form-grid">
           <div class="form-group">
             <label>Название *</label>
-            <input type="text" name="title" required />
+            <input type="text" name="name" required />
           </div>
           <div class="form-group">
-            <label>Категория *</label>
-            <select name="category" required></select>
-          </div>
-          <div class="form-group">
-            <label>Цена *</label>
-            <input type="number" name="price" required />
-          </div>
-          <div class="form-group">
-            <label>Продолжительность</label>
-            <input type="text" name="duration" placeholder="3 часа" />
-          </div>
-          <div class="form-group">
-            <label>Рейтинг (0-5)</label>
-            <input type="number" name="rating" step="0.1" min="0" max="5" value="4.5" />
-          </div>
-          <div class="form-group">
-            <label>Отзывы</label>
-            <input type="number" name="reviews_count" value="0" />
+            <label>Цена от (₽) *</label>
+            <input type="number" name="price_from" required />
           </div>
           <div class="form-group full-width">
-            <label>Краткое описание</label>
-            <textarea name="short_desc" rows="2"></textarea>
+            <label>Описание</label>
+            <textarea name="description" rows="3"></textarea>
           </div>
           <div class="form-group full-width">
-            <label>Полное описание</label>
-            <textarea name="description" rows="4"></textarea>
+            <label>Особенности (через запятую)</label>
+            <textarea name="features" rows="2" placeholder="Wi-Fi, Кондиционер, TV"></textarea>
           </div>
-          <div class="form-group">
-            <label><input type="checkbox" name="featured" /> Рекомендуемый</label>
-          </div>
-          <div class="form-group">
-            <label><input type="checkbox" name="available" checked /> Доступен</label>
+          <div class="form-group full-width">
+            <label>Фотографии</label>
+            <div class="image-upload-area" id="roomImagesArea">
+              <input type="file" id="roomImages" accept="image/*" multiple />
+              <div class="upload-placeholder">
+                <span>📷</span>
+                <p>Нажмите или перетащите фото сюда</p>
+              </div>
+            </div>
+            <div class="image-preview-grid" id="roomImagePreview"></div>
           </div>
         </div>
         <div class="modal-actions">
@@ -344,6 +530,7 @@
     </div>
   </div>
 
+  <!-- Category Modal -->
   <div class="modal" id="categoryModal">
     <div class="modal-content">
       <div class="modal-header">

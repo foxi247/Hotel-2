@@ -26,6 +26,11 @@ function renderRooms(rooms) {
   const grid = document.getElementById('roomsGrid');
   if (!grid) return;
   
+  if (!rooms || rooms.length === 0) {
+    grid.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 40px;">Номера скоро появятся</p>';
+    return;
+  }
+  
   grid.innerHTML = rooms.map(room => `
     <article class="room-card" data-id="${room.id}">
       <div class="room-image">
@@ -34,14 +39,14 @@ function renderRooms(rooms) {
       </div>
       <div class="room-content">
         <h3 class="room-title">${room.name}</h3>
-        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">${room.description.substring(0, 80)}...</p>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">${(room.description || '').substring(0, 80)}...</p>
         <div class="room-features">
           ${(room.features || []).slice(0, 4).map(f => `<span>${f}</span>`).join('')}
           ${(room.features || []).length > 4 ? `<span>+${(room.features || []).length - 4}</span>` : ''}
         </div>
         <div class="room-footer">
           <div class="room-price">
-            от ${formatPrice(room.price_from)} <span>/ ночь</span>
+            от ${formatPrice(room.price_from || 0)} <span>/ ночь</span>
           </div>
           <button class="btn btn-primary btn-sm" onclick="bookRoom('${room.id}')">Забронировать</button>
         </div>
@@ -54,10 +59,15 @@ function renderServices(services) {
   const grid = document.getElementById('servicesGrid');
   if (!grid) return;
   
+  if (!services || services.length === 0) {
+    grid.innerHTML = '<p style="text-align: center; color: var(--gray);">Услуги загружаются...</p>';
+    return;
+  }
+  
   grid.innerHTML = services.map(service => `
     <div class="service-card">
-      <div class="service-icon">${service.icon}</div>
-      <span class="service-name">${service.name}</span>
+      <div class="service-icon">${service.icon || '✨'}</div>
+      <span class="service-name">${service.name || ''}</span>
     </div>
   `).join('');
 }
@@ -65,6 +75,11 @@ function renderServices(services) {
 function renderTours(tours) {
   const grid = document.getElementById('toursGrid');
   if (!grid) return;
+  
+  if (!tours || tours.length === 0) {
+    grid.innerHTML = '<p style="text-align: center; color: var(--gray);">Туры скоро появятся</p>';
+    return;
+  }
   
   grid.innerHTML = tours.map(tour => `
     <article class="tour-card" data-category="${tour.category || ''}">
@@ -130,17 +145,22 @@ function renderReviews(reviews) {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
   
+  if (!reviews || reviews.length === 0) {
+    grid.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 40px;">Отзывов пока нет</p>';
+    return;
+  }
+  
   grid.innerHTML = reviews.map(review => `
     <div class="review-card">
       <div class="review-header">
-        <div class="review-avatar">${review.name.charAt(0)}</div>
+        <div class="review-avatar">${(review.name || 'Г').charAt(0)}</div>
         <div>
-          <div class="review-name">${review.name}</div>
+          <div class="review-name">${review.name || 'Гость'}</div>
           <div class="review-date">${formatDate(review.date)}</div>
         </div>
       </div>
-      <div class="review-stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
-      <p class="review-text">${review.text}</p>
+      <div class="review-stars">${'★'.repeat(review.rating || 5)}${'☆'.repeat(5 - (review.rating || 5))}</div>
+      <p class="review-text">${review.text || ''}</p>
     </div>
   `).join('');
 }
@@ -280,6 +300,7 @@ function initNavigation() {
   // Header scroll effect
   const header = document.getElementById('header');
   window.addEventListener('scroll', () => {
+    if (!header) return;
     if (window.scrollY > 50) {
       header.style.boxShadow = 'var(--shadow-md)';
     } else {
@@ -387,12 +408,33 @@ async function init() {
     console.error('Init error:', error);
     // Show fallback data
     showFallbackData();
+    // Still init booking form
+    initBookingForm();
   }
 }
 
 function showFallbackData() {
   // Show static content if API fails
   console.log('Showing fallback content...');
+  // Render hardcoded data as fallback
+  renderRooms([
+    {id: 'standard', name: 'Стандарт', description: 'Уютный номер с необходимым набором удобств', price_from: 3500, features: ['Wi-Fi', 'TV', 'Кондиционер']},
+    {id: 'comfort', name: 'Комфорт', description: 'Просторный номер с улучшенной мебелью', price_from: 4800, features: ['Wi-Fi', 'TV', 'Кондиционер', 'Мини-бар']},
+    {id: 'family', name: 'Семейный', description: 'Отличный выбор для семьи с детьми', price_from: 6200, features: ['Wi-Fi', 'TV', 'Кондиционер', 'Детская кроватка']}
+  ]);
+  
+  renderServices([
+    {icon: '📶', name: 'Бесплатный Wi-Fi'},
+    {icon: '🍽️', name: 'Ресторан'},
+    {icon: '🅿️', name: 'Бесплатная парковка'},
+    {icon: '🛎️', name: 'Круглосуточная стойка'},
+    {icon: '🧼', name: 'Прачечная'}
+  ]);
+  
+  renderReviews([
+    {name: 'Александр М.', rating: 5, date: '2026-02-10', text: 'Отличная гостиница! Чисто, уютно, вежливый персонал.'},
+    {name: 'Елена К.', rating: 5, date: '2026-01-28', text: 'Останавливались с семьёй — просторно и комфортно.'}
+  ]);
 }
 
 // Start
