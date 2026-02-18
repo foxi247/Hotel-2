@@ -345,16 +345,35 @@ function formatDate(dateStr) {
 }
 
 function getRoomImage(room) {
-  if (room.images?.[0]) {
-    return `/images/${room.images[0]}`;
+  // Prefer Unsplash hotel room images, fallback to local
+  const unsplashImages = {
+    'standard': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
+    'comfort': 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80',
+    'family': 'https://images.unsplash.com/photo-1591088398332-c518a23170f3?w=600&q=80',
+    'suite': 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80'
+  };
+  
+  // If room has valid Unsplash URL, use it
+  if (room.images?.[0]?.startsWith('http')) {
+    return room.images[0];
   }
+  
+  // Try to match by room ID to Unsplash
+  if (room.id && unsplashImages[room.id]) {
+    return unsplashImages[room.id];
+  }
+  
+  // Default hotel room image
   return 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80';
 }
 
 function getTourImage(tour) {
-  if (tour.images?.[0]) {
-    return `/images/${tour.images[0]}`;
+  // If tour has valid URL, use it
+  if (tour.images?.[0]?.startsWith('http')) {
+    return tour.images[0];
   }
+  
+  // Default tour/travel image
   return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80';
 }
 
@@ -382,10 +401,8 @@ async function init() {
       renderServices(data.hotel.amenities || []);
       renderNearby(data.hotel.nearby_places || []);
       renderReviews(data.hotel.testimonials || []);
-    }
-    
-    if (data.rooms) {
-      renderRooms(data.rooms);
+      // Render rooms from hotel object
+      renderRooms(data.hotel.rooms || []);
     }
     
     if (data.tours) {
@@ -405,6 +422,11 @@ async function init() {
     console.log('🏨 Halachi Hotel website initialized');
     
   } catch (error) {
+    console.error('Init error:', error);
+    // Show fallback data
+    showFallbackData();
+  }
+}
     console.error('Init error:', error);
     // Show fallback data
     showFallbackData();

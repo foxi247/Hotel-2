@@ -432,34 +432,45 @@ async function saveRoom() {
   const formData = new FormData(form);
   const id = formData.get('id');
   
+  // Get existing images from hidden inputs
   const existingImages = [];
   document.querySelectorAll('[name="room_images_existing"]').forEach(input => {
-    existingImages.push(input.value);
+    if (input.value) existingImages.push(input.value);
   });
   
+  // Get new uploaded images
   const newImages = [];
   document.querySelectorAll('[name="room_images_new"]').forEach(input => {
-    newImages.push(input.value);
+    if (input.value) newImages.push(input.value);
   });
   
+  // Build room object - use simple fields only
   const room = {
     id: id || `room_${Date.now().toString(36)}`,
-    name: formData.get('name'),
+    name: formData.get('name') || 'Номер',
     price_from: parseInt(formData.get('price_from')) || 0,
     description: formData.get('description') || '',
     features: formData.get('features') ? formData.get('features').split(',').map(f => f.trim()).filter(f => f) : [],
     images: [...existingImages, ...newImages]
   };
   
+  console.log('Saving room:', JSON.stringify(room, null, 2));
+  
   try {
     if (id) {
       await apiPut(`/api/admin/rooms/${id}`, room);
       const index = data.hotel.rooms.findIndex(r => r.id === id);
       if (index >= 0) data.hotel.rooms[index] = room;
+      console.log('Room updated successfully');
       alert('Номер обновлён!');
     } else {
+      // Ensure rooms array exists
+      if (!data.hotel.rooms) {
+        data.hotel.rooms = [];
+      }
       data.hotel.rooms.push(room);
       await apiPost('/api/admin/hotel', { rooms: data.hotel.rooms });
+      console.log('Room added successfully');
       alert('Номер добавлен!');
     }
     
@@ -467,7 +478,8 @@ async function saveRoom() {
     renderDashboard();
     document.getElementById('roomModal').classList.remove('active');
   } catch (error) {
-    alert('Ошибка сохранения');
+    console.error('Save room error:', error);
+    alert('Ошибка сохранения: ' + (error.message || 'Проверьте консоль'));
   }
 }
 
@@ -683,15 +695,19 @@ async function saveTour() {
     group_size: parseInt(formData.get('group_size')) || 10
   };
   
+  console.log('Saving tour:', tour);
+  
   try {
     if (editingId) {
       await apiPut(`/api/admin/tours/${editingId}`, tour);
       const index = data.tours.findIndex(t => t.id === editingId);
       if (index >= 0) data.tours[index] = tour;
+      console.log('Tour updated successfully');
       alert('Тур обновлён!');
     } else {
       await apiPost('/api/admin/tours', tour);
       data.tours.push(tour);
+      console.log('Tour added successfully');
       alert('Тур добавлен!');
     }
     
@@ -699,7 +715,8 @@ async function saveTour() {
     renderDashboard();
     document.getElementById('tourModal').classList.remove('active');
   } catch (error) {
-    alert('Ошибка сохранения');
+    console.error('Save tour error:', error);
+    alert('Ошибка сохранения: ' + (error.message || 'Проверьте консоль'));
   }
 }
 

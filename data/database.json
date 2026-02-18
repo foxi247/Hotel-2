@@ -103,7 +103,7 @@
           "Бесплатная вода"
         ],
         "images": [
-          "standard.jpg"
+          "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80"
         ],
         "popular": true,
         "available": true,
@@ -131,7 +131,7 @@
           "Тапочки"
         ],
         "images": [
-          "comfort.jpg"
+          "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80"
         ],
         "popular": true,
         "available": true,
@@ -158,7 +158,7 @@
           "Детская кроватка (по запросу)"
         ],
         "images": [
-          "family.jpg"
+          "https://images.unsplash.com/photo-1591088398332-c518a23170f3?w=600&q=80"
         ],
         "popular": false,
         "available": true,
@@ -188,7 +188,7 @@
           "Завтрак включён"
         ],
         "images": [
-          "suite.jpg"
+          "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80"
         ],
         "popular": false,
         "available": true,
@@ -272,7 +272,7 @@
       "location": "Дербент, сбор у гостиницы",
       "group_size": "до 12 человек",
       "images": [
-        "excursion_derbent.jpg"
+        "https://images.unsplash.com/photo-1626163543180-9c1b61d3a999?w=600&q=80"
       ],
       "rating": 4.9,
       "reviews_count": 89,
@@ -297,7 +297,7 @@
       "location": "Дербент, центр",
       "group_size": "до 8 человек",
       "images": [
-        "excursion_evening.jpg"
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"
       ],
       "rating": 4.8,
       "reviews_count": 45,
@@ -322,7 +322,7 @@
       "location": "Дербент",
       "group_size": "до 6 человек",
       "images": [
-        "tour_weekend.jpg"
+        "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=600&q=80"
       ],
       "rating": 4.7,
       "reviews_count": 67,
@@ -347,7 +347,7 @@
       "location": "Дагестан",
       "group_size": "до 10 человек",
       "images": [
-        "tour_dagestan.jpg"
+        "https://images.unsplash.com/photo-1533661537256-2569908a2499?w=600&q=80"
       ],
       "rating": 5,
       "reviews_count": 23,
@@ -373,7 +373,7 @@
       "location": "Из аэропорта в любую точку Дербента",
       "group_size": "до 4 человек",
       "images": [
-        "transfer.jpg"
+        "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&q=80"
       ],
       "rating": 4.9,
       "reviews_count": 156,
@@ -397,7 +397,7 @@
       "location": "Онлайн или в отеле",
       "group_size": "1-5 человек",
       "images": [
-        "consultation.jpg"
+        "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80"
       ],
       "rating": 4.8,
       "reviews_count": 34,
